@@ -2,6 +2,10 @@ export function add(numbers: string) {
   // If empty string or invalid input, return 0
   if (!numbers) return 0;
 
+  // Normalize input
+  numbers = numbers.trim(); // Remove leading/trailing spaces
+  numbers = numbers.replace(/\\n/g, "\n");
+
   let delimiter = ",";
   let numbersToProcess = numbers;
 
@@ -15,7 +19,7 @@ export function add(numbers: string) {
     } else {
       let customDelimiter = numbers.substring(2, firstNewLine);
 
-      // Handle delimiter with multiple characters (enclosed in square brackets)
+      // Handle delimiter with multiple characters enclosed in square brackets
       if (customDelimiter.startsWith("[") && customDelimiter.endsWith("]")) {
         customDelimiter = customDelimiter.slice(1, -1);
         // Escape special characters for regex
@@ -30,7 +34,6 @@ export function add(numbers: string) {
 
   // Create regex pattern that matches both the delimiter and newline
   const pattern = new RegExp(`${delimiter}|\n`);
-
   // Split string using the pattern and convert to numbers
   const nums = numbersToProcess
     .split(pattern)
