@@ -25,6 +25,9 @@ describe("useStringCalculator", () => {
 
     act(() => {
       result.current.handleInputChange("1,2");
+    });
+
+    act(() => {
       result.current.calculate();
     });
 
