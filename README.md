@@ -1,50 +1,26 @@
-# React + TypeScript + Vite
+## String Calculator - Incubyte TDD Assessment
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hi there! 👋
+This repository contains my solution for the Incubyte TDD Assessment - Frontend. It's a fun little project that demonstrates how to use Test-Driven Development (TDD) to build a String Calculator. Along the way, I also created a simple and interactive user interface to make the calculator easy to use.
 
-Currently, two official plugins are available:
+What's Inside? 🤔
+The String Calculator can:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Add numbers from a string separated by commas or custom delimiters.
+Handle newlines as delimiters (yep, you can mix commas and newlines!).
+Throw an error if there are negative numbers and tell you exactly which ones caused the issue.
+Let you use a clean, easy-to-understand web interface to try it out.
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Follow these steps to set up and run the app locally on your machine:
 
-- Configure the top-level `parserOptions` property like this:
+1. Clone this repository:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+   (i) git clone https://github.com/ShivamSinghSees/string-calculator
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+  (ii) cd string-calculator
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+ (iii) pnpm install
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+  (iv) pnpm run dev
