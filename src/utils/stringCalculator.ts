@@ -34,11 +34,21 @@ export function add(numbers: string) {
 
   // Create regex pattern that matches both the delimiter and newline
   const pattern = new RegExp(`${delimiter}|\n`);
+
   // Split string using the pattern and convert to numbers
   const nums = numbersToProcess
     .split(pattern)
     .map((num) => parseInt(num.trim()))
     .filter((num) => !isNaN(num));
+
+  // Check for negative numbers
+  const negativeNumbers = nums.filter((num) => num < 0);
+
+  if (negativeNumbers.length > 0) {
+    throw new Error(
+      `Negative numbers not allowed: ${negativeNumbers.join(", ")}`
+    );
+  }
 
   return nums.reduce((sum, num) => sum + num, 0);
 }

@@ -21,6 +21,12 @@ describe("String Calculator", () => {
       expect(add("1,2,3")).toBe(6);
       expect(add("1,2,3,4,5")).toBe(15);
     });
+    it("should throw error for negative numbers", () => {
+      expect(() => add("1,-2")).toThrow("Negative numbers not allowed: -2");
+      expect(() => add("-1,2,-3")).toThrow(
+        "Negative numbers not allowed: -1, -3"
+      );
+    });
   });
 
   // Delimiter tests
