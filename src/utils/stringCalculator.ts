@@ -1,5 +1,4 @@
-export function add(numbers: string) {
-  // If empty string or invalid input, return 0
+export function stringCalculator(numbers: string) {
   if (!numbers) return 0;
 
   // Normalize input
@@ -32,7 +31,10 @@ export function add(numbers: string) {
     }
   }
 
-  // Create regex pattern that matches both the delimiter and newline
+  if (delimiter === "*") {
+    delimiter = `\\*`;
+  }
+
   const pattern = new RegExp(`${delimiter}|\n`);
 
   // Split string using the pattern and convert to numbers
@@ -41,7 +43,8 @@ export function add(numbers: string) {
     .map((num) => parseInt(num.trim()))
     .filter((num) => !isNaN(num));
 
-  // Check for negative numbers
+  if (!nums.length) return 0;
+
   const negativeNumbers = nums.filter((num) => num < 0);
 
   if (negativeNumbers.length > 0) {
@@ -50,5 +53,11 @@ export function add(numbers: string) {
     );
   }
 
-  return nums.reduce((sum, num) => sum + num, 0);
+  return nums.reduce((sum, num) => {
+    if (delimiter === "\\*") {
+      return sum * num;
+    } else {
+      return sum + num;
+    }
+  });
 }

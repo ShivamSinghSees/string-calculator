@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { add } from "../utils/stringCalculator";
+import { stringCalculator } from "../utils/stringCalculator";
 
 export function useStringCalculator() {
   const [input, setInput] = useState("");
@@ -8,7 +8,7 @@ export function useStringCalculator() {
 
   const calculate = () => {
     try {
-      const sum = add(input);
+      const sum = stringCalculator(input);
       setResult(sum);
       setError(null);
     } catch (err) {
