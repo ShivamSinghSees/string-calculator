@@ -1,63 +1,128 @@
-export function stringCalculator(numbers: string) {
-  if (!numbers) return 0;
+import {
+  CUSTOM_DELIMITER_PREFIX,
+  DEFAULT_DELIMITER,
+  ESCAPED_NEWLINE,
+  MULTIPLY_DELIMITER,
+} from "./constants";
 
-  // Normalize input
-  numbers = numbers.trim(); // Remove leading/trailing spaces
-  numbers = numbers.replace(/\\n/g, "\n");
+function hasCustomDelimiter(input: string): boolean {
+  return input.startsWith(CUSTOM_DELIMITER_PREFIX);
+}
 
-  let delimiter = ",";
-  let numbersToProcess = numbers;
+function getDefaultDelimiterResult(
+  input: string,
+  shouldTrimPrefix: boolean = false
+): { delimiter: string; numbersToCalculate: string } {
+  return {
+    delimiter: DEFAULT_DELIMITER,
+    numbersToCalculate: shouldTrimPrefix ? input.substring(2) : input,
+  };
+}
 
-  // Check for custom delimiter
-  if (numbers.startsWith("//")) {
-    const firstNewLine = numbers.indexOf("\n");
-    // If no newline found or it's immediately after //, treat as invalid format
-    // and process the entire string after // as numbers
-    if (firstNewLine === -1 || firstNewLine === 2) {
-      numbersToProcess = numbers.substring(2);
-    } else {
-      let customDelimiter = numbers.substring(2, firstNewLine);
+function extractCustomDelimiterInfo(input: string) {
+  const newLineIndex = input.indexOf(ESCAPED_NEWLINE);
+  const isInvalidDelimiterFormat = newLineIndex === -1 || newLineIndex === 2;
 
-      // Handle delimiter with multiple characters enclosed in square brackets
-      if (customDelimiter.startsWith("[") && customDelimiter.endsWith("]")) {
-        customDelimiter = customDelimiter.slice(1, -1);
-        // Escape special characters for regex
-        delimiter = customDelimiter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      } else {
-        delimiter = customDelimiter;
-      }
+  return {
+    newLineIndex,
+    isInvalidDelimiterFormat,
+  };
+}
 
-      numbersToProcess = numbers.substring(firstNewLine + 1);
-    }
-  }
+function escapeRegex(delimiter: string): string {
+  return delimiter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
+function escapeSpecialCharactersInDelimiter(delimiter: string): string {
   if (delimiter === "*") {
-    delimiter = `\\*`;
+    return MULTIPLY_DELIMITER;
   }
 
-  const pattern = new RegExp(`${delimiter}|\n`);
+  if (delimiter.startsWith("[") && delimiter.endsWith("]")) {
+    return escapeRegex(delimiter.slice(1, -1));
+  }
 
-  // Split string using the pattern and convert to numbers
-  const nums = numbersToProcess
+  return delimiter;
+}
+
+function getCustomDelimiterResult(
+  input: string,
+  newLineIndex: number
+): { delimiter: string; numbersToCalculate: string } {
+  const rawDelimiter = input.substring(2, newLineIndex);
+
+  return {
+    delimiter: escapeSpecialCharactersInDelimiter(rawDelimiter),
+    numbersToCalculate: input.substring(newLineIndex + 1),
+  };
+}
+
+function getDelimiterAndNumbersToCalculate(input: string) {
+  if (!hasCustomDelimiter(input)) {
+    return getDefaultDelimiterResult(input);
+  }
+
+  const { newLineIndex, isInvalidDelimiterFormat } =
+    extractCustomDelimiterInfo(input);
+
+  if (isInvalidDelimiterFormat) {
+    return getDefaultDelimiterResult(input, true);
+  }
+
+  return getCustomDelimiterResult(input, newLineIndex);
+}
+
+function normalizeInputValue(value: string): string {
+  value = value.trim();
+  value = value.replace(/\\n/g, ESCAPED_NEWLINE);
+  return value;
+}
+
+function parsedStringifyNumberIntoCalculableFormat(
+  numbersToProcess: string,
+  delimiter: string
+) {
+  const pattern = new RegExp(`${delimiter}|\n`);
+  const numbers = numbersToProcess
     .split(pattern)
     .map((num) => parseInt(num.trim()))
     .filter((num) => !isNaN(num));
 
-  if (!nums.length) return 0;
+  return numbers;
+}
 
-  const negativeNumbers = nums.filter((num) => num < 0);
+function throwErrorIfNegativeNumberInList(numbers: number[]) {
+  const negativeNumbers = numbers.filter((num) => num < 0);
 
   if (negativeNumbers.length > 0) {
     throw new Error(
       `Negative numbers not allowed: ${negativeNumbers.join(", ")}`
     );
   }
+}
 
-  return nums.reduce((sum, num) => {
-    if (delimiter === "\\*") {
-      return sum * num;
-    } else {
-      return sum + num;
-    }
-  });
+function calculateResult(numbers: number[], delimiter: string): number {
+  if (!numbers.length) return 0;
+
+  return numbers.reduce((sum, num) =>
+    delimiter === "\\*" ? sum * num : sum + num
+  );
+}
+
+export function stringCalculator(numbers: string) {
+  if (!numbers) return 0;
+
+  numbers = normalizeInputValue(numbers);
+
+  let { delimiter, numbersToCalculate } =
+    getDelimiterAndNumbersToCalculate(numbers);
+
+  const parsedNumbers = parsedStringifyNumberIntoCalculableFormat(
+    numbersToCalculate,
+    delimiter
+  );
+
+  throwErrorIfNegativeNumberInList(parsedNumbers);
+
+  return calculateResult(parsedNumbers, delimiter);
 }
